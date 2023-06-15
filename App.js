@@ -1,58 +1,73 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import styles from "./styles";
 
 export default function App() {
   const [altura, setAltura] = useState("");
   const [peso, setPeso] = useState("");
   const [imc, setIMC] = useState("");
-  const [text, setText] = useState("");
-  const [pei, setPEI] = useState("");
+  const [resultadoTexto, setResultadoTexto] = useState("");
+  const [pesoIdeal, setPesoIdeal] = useState("");
+  const [mostrarResultado, setMostrarResultado] = useState(false);
 
-  const calculate = () => {
-    const alturaCm = parseFloat(altura) / 100;
-    const imcResult = (parseFloat(peso) / alturaCm ** 2).toFixed(1);
-    const peiResult = Math.abs(alturaCm * 100 - 105);
+  const calcularIMC = () => {
+    const alturaM = parseFloat(altura) / 100;
+    const imcResultado = (parseFloat(peso) / (alturaM * alturaM)).toFixed(1);
+    setIMC(`Su índice de masa corporal es ${imcResultado}`);
 
-    setIMC(`Su índice de masa corporal se encuentra en ${imcResult}`);
-    setPEI(`Su peso ideal es ${peiResult >= 0 ? peiResult : 0}`);
+    let textoResultado = "";
+    let pesoIdealCalculado = 0;
 
-    if (imcResult < 18.5) {
-      setText("Desnutrición");
-    } else if (imcResult >= 18.5 && imcResult <= 24.9) {
-      setText("Normal");
-    } else if (imcResult >= 25 && imcResult <= 26.9) {
-      setText("Sobrepeso");
-    } else if (imcResult >= 27 && imcResult <= 29.9) {
-      setText("Obesidad grado 1");
-    } else if (imcResult >= 30 && imcResult <= 39.9) {
-      setText("Obesidad grado 2");
-    } else if (imcResult > 40) {
-      setText("Obesidad grado 3");
+    if (imcResultado < 18.5) {
+      pesoIdealCalculado = (22 * alturaM * alturaM).toFixed(1);
+      const diferenciaPeso = (pesoIdealCalculado - parseFloat(peso)).toFixed(1);
+      textoResultado = `Desnutrición. Debe aumentar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
+    } else if (imcResultado >= 18.5 && imcResultado <= 24.9) {
+      pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
+      const diferenciaPeso = (pesoIdealCalculado - parseFloat(peso)).toFixed(1);
+      textoResultado = `Peso normal. Debe ${
+        diferenciaPeso >= 0 ? "ganar" : "perder"
+      } ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
+    } else if (imcResultado >= 25 && imcResultado <= 26.9) {
+      pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
+      const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
+      textoResultado = `Sobrepeso. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
+    } else if (imcResultado >= 27 && imcResultado <= 29.9) {
+      pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
+      const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
+      textoResultado = `Obesidad grado 1. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
+    } else if (imcResultado >= 30 && imcResultado <= 39.9) {
+      pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
+      const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
+      textoResultado = `Obesidad grado 2. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
+    } else if (imcResultado > 40) {
+      pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
+      const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
+      textoResultado = `Obesidad grado 3. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     }
+
+    setPesoIdeal(`Su peso ideal es ${pesoIdealCalculado} kg`);
+    setResultadoTexto(textoResultado);
+    setMostrarResultado(true);
   };
 
-  const reset = () => {
+  const reiniciar = () => {
     setAltura("");
     setPeso("");
     setIMC("");
-    setText("");
-    setPEI("");
+    setResultadoTexto("");
+    setPesoIdeal("");
+    setMostrarResultado(false);
   };
 
-  const handleAlturaChange = (text) => {
-    const numericValue = text.replace(/[^0-9]/g, "");
-    setAltura(numericValue);
+  const manejarCambioAltura = (texto) => {
+    const valorNumerico = texto.replace(/[^0-9]/g, "");
+    setAltura(valorNumerico);
   };
 
-  const handlePesoChange = (text) => {
-    const numericValue = text.replace(/[^0-9]/g, "");
-    setPeso(numericValue);
+  const manejarCambioPeso = (texto) => {
+    const valorNumerico = texto.replace(/[^0-9]/g, "");
+    setPeso(valorNumerico);
   };
 
   return (
@@ -64,7 +79,7 @@ export default function App() {
           <TextInput
             style={styles.input}
             value={altura}
-            onChangeText={handleAlturaChange}
+            onChangeText={manejarCambioAltura}
             keyboardType="numeric"
           />
         </View>
@@ -73,24 +88,26 @@ export default function App() {
           <TextInput
             style={styles.input}
             value={peso}
-            onChangeText={handlePesoChange}
+            onChangeText={manejarCambioPeso}
             keyboardType="numeric"
           />
         </View>
         <View style={styles.buttonArea}>
-          <TouchableOpacity style={styles.button} onPress={calculate}>
+          <TouchableOpacity style={styles.button} onPress={calcularIMC}>
             <Text style={styles.buttonText}>Calcular</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={reset}>
+          <TouchableOpacity style={styles.button} onPress={reiniciar}>
             <Text style={styles.buttonText}>Restablecer</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.resultArea}>
-          <Text style={styles.resultLabel}>Índice de masa corporal</Text>
-          <Text style={styles.resultText}>{imc}</Text>
-          <Text style={styles.resultText}>{text}</Text>
-          <Text style={styles.resultText}>{pei}</Text>
-        </View>
+        {mostrarResultado && (
+          <View style={styles.resultArea}>
+            <Text style={styles.resultLabel}>Resultado</Text>
+            <Text style={styles.resultText}>{imc}</Text>
+            <Text style={styles.resultText}>{resultadoTexto}</Text>
+            <Text style={styles.resultText}>{pesoIdeal}</Text>
+          </View>
+        )}
       </View>
     </View>
   );

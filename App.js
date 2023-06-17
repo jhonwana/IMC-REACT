@@ -1,56 +1,77 @@
+// Importar los módulos necesarios de React y React Native
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
+
+// Importar los estilos desde un archivo externo
 import styles from "./styles";
 
+// Definir el componente principal de la aplicación
 export default function App() {
-  const [altura, setAltura] = useState("");
-  const [peso, setPeso] = useState("");
-  const [imc, setIMC] = useState("");
-  const [resultadoTexto, setResultadoTexto] = useState("");
-  const [pesoIdeal, setPesoIdeal] = useState("");
-  const [mostrarResultado, setMostrarResultado] = useState(false);
+  // Declarar y configurar los estados utilizando el hook useState
+  const [altura, setAltura] = useState(""); // Estado para almacenar la altura
+  const [peso, setPeso] = useState(""); // Estado para almacenar el peso
+  const [imc, setIMC] = useState(""); // Estado para almacenar el resultado del IMC
+  const [resultadoTexto, setResultadoTexto] = useState(""); // Estado para almacenar el texto del resultado
+  const [pesoIdeal, setPesoIdeal] = useState(""); // Estado para almacenar el peso ideal
+  const [mostrarResultado, setMostrarResultado] = useState(false); // Estado para controlar la visibilidad del resultado
 
+  // Función para calcular el IMC y establecer los estados correspondientes
   const calcularIMC = () => {
+    // Convertir la altura de cm a m
     const alturaM = parseFloat(altura) / 100;
+
+    // Calcular el IMC
     const imcResultado = (parseFloat(peso) / (alturaM * alturaM)).toFixed(1);
+
+    // Establecer el estado del IMC
     setIMC(`Su índice de masa corporal es ${imcResultado}`);
 
+    // Variables para almacenar el texto del resultado y el peso ideal
     let textoResultado = "";
     let pesoIdealCalculado = 0;
 
+    // Determinar la categoría del IMC y calcular el peso ideal
     if (imcResultado < 18.5) {
+      // Desnutrición
       pesoIdealCalculado = (22 * alturaM * alturaM).toFixed(1);
       const diferenciaPeso = (pesoIdealCalculado - parseFloat(peso)).toFixed(1);
       textoResultado = `Desnutrición. Debe aumentar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     } else if (imcResultado >= 18.5 && imcResultado <= 24.9) {
+      // Peso normal
       pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
       const diferenciaPeso = (pesoIdealCalculado - parseFloat(peso)).toFixed(1);
       textoResultado = `Peso normal. Debe ${
         diferenciaPeso >= 0 ? "ganar" : "perder"
       } ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     } else if (imcResultado >= 25 && imcResultado <= 26.9) {
+      // Sobrepeso
       pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
       const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
       textoResultado = `Sobrepeso. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     } else if (imcResultado >= 27 && imcResultado <= 29.9) {
+      // Obesidad grado 1
       pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
       const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
       textoResultado = `Obesidad grado 1. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     } else if (imcResultado >= 30 && imcResultado <= 39.9) {
+      // Obesidad grado 2
       pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
       const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
       textoResultado = `Obesidad grado 2. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     } else if (imcResultado > 40) {
+      // Obesidad grado 3
       pesoIdealCalculado = (alturaM * alturaM * 22).toFixed(1);
       const diferenciaPeso = (parseFloat(peso) - pesoIdealCalculado).toFixed(1);
       textoResultado = `Obesidad grado 3. Debe bajar ${Math.abs(diferenciaPeso)} kg para alcanzar su peso ideal.`;
     }
 
+    // Establecer los estados correspondientes
     setPesoIdeal(`Su peso ideal es ${pesoIdealCalculado} kg`);
     setResultadoTexto(textoResultado);
     setMostrarResultado(true);
   };
 
+  // Función para reiniciar los estados
   const reiniciar = () => {
     setAltura("");
     setPeso("");
@@ -60,16 +81,23 @@ export default function App() {
     setMostrarResultado(false);
   };
 
+  // Función para manejar el cambio en el campo de altura
   const manejarCambioAltura = (texto) => {
+    // Eliminar cualquier carácter que no sea un número
     const valorNumerico = texto.replace(/[^0-9]/g, "");
+    // Establecer el estado de la altura
     setAltura(valorNumerico);
   };
 
+  // Función para manejar el cambio en el campo de peso
   const manejarCambioPeso = (texto) => {
+    // Eliminar cualquier carácter que no sea un número
     const valorNumerico = texto.replace(/[^0-9]/g, "");
+    // Establecer el estado del peso
     setPeso(valorNumerico);
   };
 
+  // Renderizar la interfaz de usuario
   return (
     <View style={styles.container}>
       <View style={styles.card}>
